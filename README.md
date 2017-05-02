@@ -1,4 +1,4 @@
-fdmg.pip
+hyperized.pip
 =========
 
 Simple wrapper for Python Package manager
