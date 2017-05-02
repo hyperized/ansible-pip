@@ -1,0 +1,30 @@
+---
+- name: ensure required packages for python2.7
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - python-pip
+    - python-software-properties
+  when:
+    - pip_executable != 'pip3'
+
+- name: ensure required packages for python3
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - python3-pip
+  when:
+    - pip_executable == 'pip3'
+
+- name: ensure pip is installed and up to date for python2.7
+  shell: "python -m pip install -U pip"
+  changed_when: False
+  when:
+    - pip_executable != 'pip3'
+
+- name: install required pip
+  pip:
+    name: "{{ pip_name }}"
+    state: "{{ pip_state }}"
+    executable: "{{ pip_executable }}"
+    extra_args: "{{ pip_extra_args | default(omit) }}"

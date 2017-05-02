@@ -1,0 +1,6 @@
+---
+- hosts: all
+  become: yes
+  roles:
+    - { role: hyperized.pip, pip_executable: pip3, pip_name: awscli }
+    - { role: hyperized.pip, pip_executable: pip3, pip_name: 'boto3' }

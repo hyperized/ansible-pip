@@ -1,0 +1,83 @@
+image: hyperized/ansible-docker-image:ubuntu1404-current
+
+before_script:
+  - mkdir -p /etc/ansible/roles/`basename "$PWD"` && cp -R * /etc/ansible/roles/`basename "$PWD"`
+
+stages:
+  - yaml
+  - syntax
+  - execution
+
+# Verify Syntax is A OK.
+yaml_lint:
+  stage: yaml
+  script:
+    - yaml-lint -i -q .
+
+syntax_check:
+  stage: syntax
+  script:
+    - ansible --version
+    - ansible-playbook --syntax-check tests/python27.yml
+
+syntax_check_devel:
+  stage: syntax
+  image: hyperized/ansible-docker-image:ubuntu1404-devel
+  script:
+    - ansible --version
+    - ansible-playbook --syntax-check tests/python27.yml
+
+# Check actual execution
+execution_current_python27:
+  stage: execution
+  script:
+    - ansible --version
+    - ansible-playbook tests/python27.yml --connection=local
+    - >
+      ansible-playbook tests/python27.yml --connection=local
+      | grep -q 'changed=0.*failed=0'
+      && (echo 'Idempotence test: pass' && exit 0)
+      || (echo 'Idempotence test: fail' && exit 1)
+    - which pip
+    - pip --version
+
+execution_devel_python27:
+  stage: execution
+  image: hyperized/ansible-docker-image:ubuntu1404-devel
+  script:
+    - ansible --version
+    - ansible-playbook tests/python27.yml --connection=local
+    - >
+      ansible-playbook tests/python27.yml --connection=local
+      | grep -q 'changed=0.*failed=0'
+      && (echo 'Idempotence test: pass' && exit 0)
+      || (echo 'Idempotence test: fail' && exit 1)
+    - which pip
+    - pip --version
+
+execution_current_python3:
+  stage: execution
+  script:
+    - ansible --version
+    - ansible-playbook tests/python3.yml --connection=local
+    - >
+      ansible-playbook tests/python3.yml --connection=local
+      | grep -q 'changed=0.*failed=0'
+      && (echo 'Idempotence test: pass' && exit 0)
+      || (echo 'Idempotence test: fail' && exit 1)
+    - which pip3
+    - pip3 --version
+
+execution_devel_python3:
+  stage: execution
+  image: hyperized/ansible-docker-image:ubuntu1404-devel
+  script:
+    - ansible --version
+    - ansible-playbook tests/python3.yml --connection=local
+    - >
+      ansible-playbook tests/python3.yml --connection=local
+      | grep -q 'changed=0.*failed=0'
+      && (echo 'Idempotence test: pass' && exit 0)
+      || (echo 'Idempotence test: fail' && exit 1)
+    - which pip3
+    - pip3 --version

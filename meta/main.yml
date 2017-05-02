@@ -1,0 +1,13 @@
+galaxy_info:
+  author: Gerben Geijteman
+  description: Python package manager
+  company: FD Mediagroep
+  license: MIT
+  min_ansible_version: 2.0
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty
+  galaxy_tags:
+    - pip
+dependencies: []
